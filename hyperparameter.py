@@ -3,6 +3,7 @@ import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.optim as optim
+import random
 from ResNet import ResNet
 import json
 from prettytable import PrettyTable
@@ -28,7 +29,7 @@ def get_parameter(hp):
 
 
 if __name__ == '__main__':
-    feasible = dict()
+    feasible = []
     hyperparams = {
         'N': 3,
         'C_1': 64,
@@ -40,18 +41,20 @@ if __name__ == '__main__':
     count = 0
     for N in [2, 3, 4, 5]:
         for C_1 in [16, 32, 64, 128]:
-            for P in [1, 2, 4, 8]:
+            for P in [1, 2]:
                 for B in [1, 2, 3]:
-                    for F in [3, 5, 7]:
-                        for K in [3, 5, 7]:
-                            hyperparams['N'] = N
-                            hyperparams['C_1'] = C_1
-                            hyperparams['P'] = P
-                            hyperparams['B'] = [B for _ in range(N)]
-                            hyperparams['F'] = [F for _ in range(N)]
-                            hyperparams['K'] = [K for _ in range(N)]
-                            if get_parameter(hyperparams):
-                                count += 1
-                                feasible[count] = hyperparams
-                                print(count)
-                                print(N, C_1, P)
+                    hyperparams['N'] = N
+                    hyperparams['C_1'] = C_1
+                    hyperparams['P'] = P
+                    hyperparams['B'] = [B for _ in range(N)]
+                    hyperparams['F'] = [3 for _ in range(N)]
+                    hyperparams['K'] = [1 for _ in range(N)]
+                    if get_parameter(hyperparams):
+                        count += 1
+                        feasible.append(hyperparams)
+                        print(count)
+                        print(N, C_1, P)
+    random.shuffle(feasible)
+    feasible = {i: item for i, item in enumerate(feasible)}
+    with open('parameters.json', 'w') as f:
+        json.dump(feasible, f)
