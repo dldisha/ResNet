@@ -70,7 +70,6 @@ class ResBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-
     def __init__(
             self,
             C_1,
@@ -95,15 +94,14 @@ class ResNet(nn.Module):
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
 
-        self.layer1 = self._make_layer(self.inplanes, self.inplanes * 2, K[0],F[0],)
-        self.layer2 = self._make_layer(block, 128, layers[1], stride=2,
-                                       dilate=replace_stride_with_dilation[0])
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2,
-                                       dilate=replace_stride_with_dilation[1])
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
-                                       dilate=replace_stride_with_dilation[2])
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.layer1 = self._make_layer(self.inplanes, self.inplanes * 2, K[0], F[0], B[0])
+        layer2 = []
+        for i in range(1, N):
+            layer2.append(self._make_layer(self.inplanes * (2 ** i), self.inplanes * (2 ** (i + 1)), K[i], F[i], B[i]))
+        self.layer2 = nn.Sequential(*layer2)
+        self.avgpool = nn.AdaptiveAvgPool2d((P, P))
+        final_input = int(self.inplanes * (2 ** (N - 1)) * ((32 * (1 / 2 ** (N - 1)) / P) ** 2))
+        self.fc = nn.Linear(final_input, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -113,7 +111,6 @@ class ResNet(nn.Module):
                 nn.init.constant_(m.bias, 0)
 
     def _make_layer(self, inplanes, planes, K, F, blocks, stride=1):
-        norm_layer = self._norm_layer
         downsample = nn.Conv2d(inplanes, planes, kernel_size=K, stride=stride, padding=(K - 1) // 2, bias=False)
 
         layers = []
@@ -142,5 +139,5 @@ class ResNet(nn.Module):
 
 
 if __name__ == '__main__':
-    model = torchvision.models.resnet18()
+    model = ResNet(64)
     print(model)
