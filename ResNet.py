@@ -1,5 +1,19 @@
 import torch
 import torch.nn as nn
+from prettytable import PrettyTable
+
+
+def count_parameters(model):
+    table = PrettyTable(["Modules", "Parameters"])
+    total_params = 0
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad: continue
+        params = parameter.numel()
+        table.add_row([name, params])
+        total_params += params
+    print(table)
+    print(f"Total Trainable Params: {total_params}")
+    return total_params
 
 
 # N:    residual layer (default: 4)
@@ -46,7 +60,7 @@ class ResBlock(nn.Module):
         self.conv1 = convNxN(C_in=C_in, C_out=C_out, F=F, stride=stride, padding=(F - 1) // 2)
         self.bn1 = norm_layer(C_out)
         self.relu = nn.ReLU(inplace=True)
-        self.conv2 = convNxN(C_in=C_in, C_out=C_out, F=F, stride=1, padding=(F - 1) // 2)
+        self.conv2 = convNxN(C_in=C_out, C_out=C_out, F=F, stride=1, padding=(F - 1) // 2)
         self.bn2 = norm_layer(C_out)
         self.downsample = downsample
 
@@ -94,13 +108,15 @@ class ResNet(nn.Module):
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
 
-        self.layer1 = self._make_layer(self.inplanes, self.inplanes * 2, K[0], F[0], B[0])
+        self.layer1 = self._make_layer(self.inplanes, self.inplanes, K[0], F[0], B[0])
         layer2 = []
-        for i in range(1, N):
-            layer2.append(self._make_layer(self.inplanes * (2 ** i), self.inplanes * (2 ** (i + 1)), K[i], F[i], B[i]))
+        for i in range(N - 1):
+            layer2.append(self._make_layer(self.inplanes * (2 ** i),
+                                           self.inplanes * (2 ** (i + 1)),
+                                           K[i], F[i], B[i], stride=2))
         self.layer2 = nn.Sequential(*layer2)
         self.avgpool = nn.AdaptiveAvgPool2d((P, P))
-        final_input = int(self.inplanes * (2 ** (N - 1)) * ((32 * (1 / 2 ** (N - 1)) / P) ** 2))
+        final_input = int(self.inplanes * (2 ** (N - 1)) * (P ** 2))
         self.fc = nn.Linear(final_input, num_classes)
 
         for m in self.modules():
@@ -111,7 +127,13 @@ class ResNet(nn.Module):
                 nn.init.constant_(m.bias, 0)
 
     def _make_layer(self, inplanes, planes, K, F, blocks, stride=1):
-        downsample = nn.Conv2d(inplanes, planes, kernel_size=K, stride=stride, padding=(K - 1) // 2, bias=False)
+        if inplanes == planes:
+            downsample = None
+        else:
+            downsample = nn.Sequential(
+                nn.Conv2d(inplanes, planes, kernel_size=K, stride=stride, padding=(K - 1) // 2, bias=False),
+                nn.BatchNorm2d(planes),
+            )
 
         layers = []
         layers.append(ResBlock(inplanes, planes, F, stride, downsample=downsample))
@@ -124,20 +146,29 @@ class ResNet(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        x = self.maxpool(x)
+        # x = self.maxpool(x)
 
         x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
-
+        # print(x.shape)
+        for layer in self.layer2:
+            x = layer(x)
+            # print(x.shape)
         x = self.avgpool(x)
+        # print(x.shape)
         x = torch.flatten(x, 1)
+        # print(x.shape)
         x = self.fc(x)
+        # print(x.shape)
 
         return x
 
 
 if __name__ == '__main__':
-    model = ResNet(64)
+    model = ResNet(64, N=3, F=[3, 3, 3, 3], B=[2, 2, 2, 2], K=[1, 1, 1, 1], P=1)
+    # model = ResNet(64, N=5, F=[3 for _ in range(5)], B=[2 for _ in range(5)], K=[1 for _ in range(5)], P=1)
+    images = torch.randn(10, 3, 32, 32)
     print(model)
+    print(count_parameters(model) / 1000 / 1000)
+    print(images.size())
+    outputs = model(images)
+    print(outputs.size())
