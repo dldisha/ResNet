@@ -5,15 +5,30 @@ import torch.nn as nn
 import torch.optim as optim
 from ResNet import ResNet
 import json
+from prettytable import PrettyTable
 
 params = {
-    'batch_size': 128,
+    'batch_size': 64,
     'lr': 0.001,
     'workers': 0,
     'classes': ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'),
     'gpu': True,
     'epoch': 10,
 }
+
+
+def count_parameters(model):
+    table = PrettyTable(["Modules", "Parameters"])
+    total_params = 0
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad: continue
+        params = parameter.numel()
+        table.add_row([name, params])
+        total_params += params
+    print(table)
+    print(f"Total Trainable Params: {total_params}")
+    return total_params
+
 
 transform = transforms.Compose(
     [transforms.ToTensor(),
@@ -31,6 +46,10 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=params['batch_size'
 def run(hp):
     name = json.dumps(hp)
     net = ResNet(**hp)
+    params_size = count_parameters(net) / 1000000.
+    if params_size > 5.:
+        print(params_size)
+        raise AssertionError
     if params['gpu']:
         net = net.cuda()
 
@@ -80,7 +99,7 @@ def run(hp):
 
 if __name__ == '__main__':
     hyperparams = {
-        'N': 4,
+        'N': 3,
         'C_1': 64,
         'P': 1,
         'B': [2, 2, 2, 2],
