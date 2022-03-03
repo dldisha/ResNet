@@ -17,15 +17,15 @@ def count_parameters(model):
         params = parameter.numel()
         table.add_row([name, params])
         total_params += params
-    print(table)
-    print(f"Total Trainable Params: {total_params}")
+    # print(table)
+    # print(f"Total Trainable Params: {total_params}")
     return total_params
 
 
 def get_parameter(hp):
     net = ResNet(**hp)
     params_size = count_parameters(net) / 1000000.
-    return params_size < 5.
+    return params_size
 
 
 if __name__ == '__main__':
@@ -43,14 +43,17 @@ if __name__ == '__main__':
         for C_1 in [16, 32, 64, 128]:
             for P in [1, 2]:
                 for B in [1, 2, 3]:
+                    hyperparams = dict()
                     hyperparams['N'] = N
                     hyperparams['C_1'] = C_1
                     hyperparams['P'] = P
                     hyperparams['B'] = [B for _ in range(N)]
                     hyperparams['F'] = [3 for _ in range(N)]
                     hyperparams['K'] = [1 for _ in range(N)]
-                    if get_parameter(hyperparams):
+                    params_size = get_parameter(hyperparams)
+                    if params_size < 5.:
                         count += 1
+                        print(params_size)
                         feasible.append(hyperparams)
                         print(count)
                         print(N, C_1, P)

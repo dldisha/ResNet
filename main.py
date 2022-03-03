@@ -1,11 +1,28 @@
+import argparse
+import json
 import torch
-import torchvision
-import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.optim as optim
-from ResNet import ResNet
-import json
+import torchvision
+import torchvision.transforms as transforms
 from prettytable import PrettyTable
+from multiprocessing import Pool
+
+from ResNet import ResNet
+
+
+def str2bool(v):
+    return v.lower() in ('true', '1')
+
+
+parser = argparse.ArgumentParser()
+
+# -------------------------------------------------------------------------
+# Data input settings
+parser.add_argument("--start", type=int, default=0)
+parser.add_argument("--end", type=int, default=66)
+# Load Models
+start_end, unparsed = parser.parse_known_args()
 
 params = {
     'batch_size': 64,
@@ -13,7 +30,7 @@ params = {
     'workers': 0,
     'classes': ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'),
     'gpu': True,
-    'epoch': 10,
+    'epoch': 50,
 }
 
 
@@ -25,14 +42,16 @@ def count_parameters(model):
         params = parameter.numel()
         table.add_row([name, params])
         total_params += params
-    print(table)
+    # print(table)
     print(f"Total Trainable Params: {total_params}")
     return total_params
 
 
 transform = transforms.Compose(
     [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+     transforms.RandomCrop(size=32, padding=4),
+     transforms.RandomHorizontalFlip(p=0.5),
+     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
 
 trainset = torchvision.datasets.CIFAR10(root='data', train=True, download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=params['batch_size'], shuffle=True,
@@ -59,6 +78,7 @@ def run(hp):
     hp['score'] = 0.0
     hp['epoch'] = 0
     iter_ = 0
+    best_model = None
     for epoch in range(params['epoch']):
         for i, data in enumerate(trainloader):
             iter_ += 1
@@ -91,19 +111,24 @@ def run(hp):
                 if hp['score'] < correct / total:
                     hp['score'] = correct / total
                     hp['epoch'] = epoch
-                    torch.save(net.state_dict(), name + '.pt')
-    with open(name + '.json', 'w') as f:
+                    best_model = net.state_dict()
+    torch.save(best_model, 'outputs/' + name + '.pt')
+    with open('outputs/' + name + '.json', 'w') as f:
         json.dump(hp, f)
     return hp
 
 
 if __name__ == '__main__':
-    hyperparams = {
-        'N': 3,
-        'C_1': 64,
-        'P': 1,
-        'B': [2, 2, 2, 2],
-        'F': [3, 3, 3, 3],
-        'K': [1, 1, 1, 1],
-    }
-    run(hyperparams)
+    # hyperparams = {
+    #     'N': 3,
+    #     'C_1': 64,
+    #     'P': 1,
+    #     'B': [2, 2, 2, 2],
+    #     'F': [3, 3, 3, 3],
+    #     'K': [1, 1, 1, 1],
+    # }
+    with open("parameters.json", 'r') as f:
+        candidates = json.load(f)
+    candidates = [candidates[str(i)] for i in range(start_end.start, start_end.end)]
+    with Pool(8) as p:
+        p.map(run, candidates)
