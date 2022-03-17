@@ -136,6 +136,8 @@ if __name__ == '__main__':
     #     'B': [2, 2, 2, 2],
     #     'F': [3, 3, 3, 3],
     #     'K': [1, 1, 1, 1],
+    #     'D_P': 0.1,
+    #     'D_S': 3
     # }
     with open("parameters.json", 'r') as f:
         candidates = json.load(f)
