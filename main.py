@@ -1,4 +1,5 @@
 import argparse
+import os
 import json
 import torch
 import torch.nn as nn
@@ -47,23 +48,32 @@ def count_parameters(model):
     return total_params
 
 
-transform = transforms.Compose(
+transform_train = transforms.Compose(
     [transforms.ToTensor(),
      transforms.RandomCrop(size=32, padding=4),
      transforms.RandomHorizontalFlip(p=0.5),
      transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
 
-trainset = torchvision.datasets.CIFAR10(root='data', train=True, download=True, transform=transform)
+transform_test = transforms.Compose(
+    [transforms.ToTensor(),
+     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
+
+trainset = torchvision.datasets.CIFAR10(root='data', train=True, download=True, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=params['batch_size'], shuffle=True,
                                           num_workers=params['workers'])
 
-testset = torchvision.datasets.CIFAR10(root='data', train=False, download=True, transform=transform)
+testset = torchvision.datasets.CIFAR10(root='data', train=False, download=True, transform=transform_test)
 testloader = torch.utils.data.DataLoader(testset, batch_size=params['batch_size'], shuffle=False,
                                          num_workers=params['workers'])
 
 
 def run(hp):
+    if 'D_P' in hp:
+        params['lr'] = 5e-4
+        params['epoch'] = 60
     name = json.dumps(hp)
+    if os.path.exists('outputs/' + name + '.json'):
+        return 0
     net = ResNet(**hp)
     params_size = count_parameters(net) / 1000000.
     if params_size > 5.:
@@ -130,5 +140,5 @@ if __name__ == '__main__':
     with open("parameters.json", 'r') as f:
         candidates = json.load(f)
     candidates = [candidates[str(i)] for i in range(start_end.start, start_end.end)]
-    with Pool(8) as p:
+    with Pool(6) as p:
         p.map(run, candidates)
