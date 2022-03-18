@@ -8,6 +8,8 @@ import torchvision
 import torchvision.transforms as transforms
 from prettytable import PrettyTable
 from multiprocessing import Pool
+#plots
+%matplotlib inline
 
 from ResNet import ResNet
 
@@ -66,6 +68,43 @@ testset = torchvision.datasets.CIFAR10(root='data', train=False, download=True, 
 testloader = torch.utils.data.DataLoader(testset, batch_size=params['batch_size'], shuffle=False,
                                          num_workers=params['workers'])
 
+#Visualization for random training images
+normalize = transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2023, 0.1994, 0.2010])
+
+training_loader = torch.utils.data.DataLoader(
+        datasets.CIFAR10(root='./data', train=True, transform=transforms.Compose([
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomCrop(32, 4),
+            transforms.ToTensor(),
+            normalize,
+        ]), download=True),
+        batch_size=64, shuffle=True,
+        num_workers=4, pin_memory=True)
+
+validation_loader = torch.utils.data.DataLoader(
+        datasets.CIFAR10(root='./data', train=False, transform=transforms.Compose([
+            transforms.ToTensor(),
+            normalize,
+        ])),
+        batch_size=64, shuffle=False,
+        num_workers=4, pin_memory=True)
+
+classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
+def imshow(img):
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+
+# get some random training images
+dataiter = iter(training_loader)
+images, labels = dataiter.next()
+plt.figure(figsize=(22,10)) 
+
+# show images
+imshow(torchvision.utils.make_grid(images[0:8,:,:]))
+# print labels
+print(' '.join('%18s' % classes[labels[j]] for j in range(8)))
 
 def run(hp):
     if 'D_P' in hp:
