@@ -1,5 +1,5 @@
 # Deep Learning Mini Project 1:
-## Submission by:
+## Submission by: :smiley:
 * Name: Disha Lamba <br/>
 Netid: dl4747 <br/>
 * Name: Evan Lehrer <br/>
@@ -8,7 +8,7 @@ netid: el3294 <br/>
   netid: jw6466 <br/>
   
  # Mini Project 1: Residual Network Design
- ## **Objective:** <br/>
+ ## **Objective:** :dart: <br/>
  Design a ResNet architecture to maximize accuracy on the CIFAR-10 dataset under constraints. <br/>
 (1) maximize test accuracy on CIFAR-10 while ensuring our model has <br/>
 (2) less than 5M trainable parameters.
@@ -20,9 +20,9 @@ Here are the classes in the dataset with some random images from each class:
 </br>
 <img src="https://imgs.search.brave.com/mrVWRVhArBOD1FmbyACPHGplehLu_QeasvSPLeIFQc0/rs:fit:527:424:1/g:ce/aHR0cHM6Ly9zaWNo/a2FyLXZhbGVudHlu/LmdpdGh1Yi5pby9j/aWZhcjEwL2ltYWdl/cy9DSUZBUi0xMF9l/eGFtcGxlcy5wbmc" alt="MarineGEO circle logo" style="height: 500px; width:500px;"/>
 
-## Implementation
+## Implementation :computer:
 To achieve the objective, our implementation and study were focused on rescaling the vanilla ResNet-18 using PyTorch. 
-### Architecture:
+### Architecture: :pushpin:
 The predefined hyperparameter sets, which are changeable in our problem setting, are related to the design of the
 ResNet model including model depth, model width and kernel sizes. The hyperparameter sets are as
 following: </br>
@@ -44,7 +44,7 @@ In our approach, we have used
   
 Note: More details about each technique can be found in our report. 
 
-## Results:
+## Results: :tada:
 ### Hyperparameter setting:
 After Compound scaling which is inspired from [EfficentNet 2019](http://proceedings.mlr.press/v97/tan19a/tan19a.pdf) paper, we get our hyperparameter values as:</br>
 N = 2, </br>
@@ -54,10 +54,17 @@ B = [3,3], </br>
 F = 3, </br>
 K = [1,1] or [3,3] or [5,5]. </br>
 
-### Accuarcy and Number of parameters:
+### Accuarcy and Number of parameters: :sunglasses:
 After rescaling the vanilla ResNet-18 model, we achieve an accuracy of 90.70% with 4.435082M trainable parameters.
 
 
-## Repository Use Instructions:
+## Repository Use Instructions: :scroll:
+Preparing new machine learning models can take hours or sometimes weeks. But we have got your back, for the ease we have saved our final model and our grid search results so that you can downlaod these files and play around with it.
+### 1. Download the following files :arrow_up:
+[Our Final Model]() </br>
+
+[Grid search results](https://docs.google.com/spreadsheets/d/1VPc2_BTZxTSq6KHmQVUGU4leeedbWT1ioMhQBhEzMuc/edit#gid=1164316246)
+
+### 4. Ready Steady Go... :turtle: :rabbit2:
 
 
