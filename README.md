@@ -51,7 +51,7 @@ N = 2, </br>
 C1 = 128, </br>
 P = [1,1], </br>
 B = [3,3], </br>
-F = 3, </br>
+F = [3,3], </br>
 K = [1,1] or [3,3] or [5,5]. </br>
 
 ### Accuarcy and Number of parameters: :sunglasses:
