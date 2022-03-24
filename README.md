@@ -7,7 +7,7 @@ netid: el3294 <br/>
 * Name: Junda Wu<br/>
   netid: jw6466 <br/>
   
- # Mini Project 1 Topic:
+ # Mini Project 1: Residual Network Design
  ## **Objective:** <br/>
  Design a ResNet architecture to maximize accuracy on the CIFAR-10 dataset under constraints. <br/>
 (1) maximize test accuracy on CIFAR-10 while ensuring our model has <br/>
@@ -55,7 +55,7 @@ F = 3, </br>
 K = [1,1] or [3,3] or [5,5]. </br>
 
 ### Accuarcy and Number of parameters:
-After rescaling our model and setting the hyperparameters we get our accuracy as 90.70% with M parameters.
+After rescaling our model and setting the hyperparameters we get our accuracy as 90.70% with 4.435082M parameters.
 
 
 ## Repository Use Instructions:
