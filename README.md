@@ -55,7 +55,7 @@ F = 3, </br>
 K = [1,1] or [3,3] or [5,5]. </br>
 
 ### Accuarcy and Number of parameters:
-After rescaling our model and setting the hyperparameters we get our accuracy as 90.70% with 4.435082M parameters.
+After rescaling the vanilla ResNet-18 model, we achieve an accuracy of 90.70% with 4.435082M trainable parameters.
 
 
 ## Repository Use Instructions:
