@@ -61,10 +61,14 @@ After rescaling the vanilla ResNet-18 model, we achieve an accuracy of 90.70% wi
 ## Repository Use Instructions: :scroll:
 Preparing new machine learning models can take hours or sometimes weeks. But we have got your back, for the ease we have saved our final model and our grid search results so that you can downlaod these files and play around with it.
 ### 1. Download the following files :arrow_up:
-[Our Final Model]() </br>
+[Our Final Model](https://drive.google.com/file/d/1SFrRIStCXG7akfSRp-H9i1eZQhTfdedV/view?usp=sharing) </br>
 
-[Grid search results](https://docs.google.com/spreadsheets/d/1VPc2_BTZxTSq6KHmQVUGU4leeedbWT1ioMhQBhEzMuc/edit#gid=1164316246)
+[Grid search results](https://docs.google.com/spreadsheets/d/1VPc2_BTZxTSq6KHmQVUGU4leeedbWT1ioMhQBhEzMuc/edit?usp=sharing)
 
-### 4. Ready Steady Go... :turtle: :rabbit2:
+### 2. Upload the files in Colab Notebook: :file_folder:
+After you have downloaded these files, upload them in your Google Colab Version of our [Mini project 1 Notebook](https://github.com/dldisha/ResNet/blob/main/colab-mini1.ipynb)
+
+### 3. Ready Steady Go... :turtle: :rabbit2:
+Everthing is set now. Yon can run the notebook and see the results. 
 
 
