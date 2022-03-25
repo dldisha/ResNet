@@ -66,7 +66,9 @@ Preparing new machine learning models can take hours or sometimes weeks. But we 
 [Grid search results](https://docs.google.com/spreadsheets/d/1VPc2_BTZxTSq6KHmQVUGU4leeedbWT1ioMhQBhEzMuc/edit?usp=sharing)
 
 ### 2. Upload the files in Colab Notebook: :file_folder:
-After you have downloaded these files, upload them in your Google Colab Version of our [Mini project 1 Notebook](https://github.com/dldisha/ResNet/blob/main/colab-mini1.ipynb)
+After you have downloaded these files, upload them in your Google Colab Version of our [Mini project 1 Notebook](https://github.com/dldisha/ResNet/blob/main/colab-mini1.ipynb).
+
+Note: To run the notebook, please see if the torch version is >=1.10.2.
 
 ### 3. Ready Steady Go... :turtle: :rabbit2:
 Everthing is set now. Yon can run the notebook and see the results. 
